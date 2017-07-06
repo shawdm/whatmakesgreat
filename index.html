@@ -3,6 +3,7 @@
   <head>
     <title>#WhatMAkesGreat</title>
     <link rel='stylesheet' href='css/style.css' />
+    <link rel='stylesheet' href='css/nouislider.min.css' />
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Lato:300,300i,700,700i" rel="stylesheet">
@@ -13,10 +14,21 @@
     <section class='header'>
       <h1>#WhatMakesGreat</h1>
     </section>
+    <section>
+      <article>
+        <h2>Temperature</h2>
+        <div class='visualisation'>
+          <div class='slider' id="temperature"></div>
+          <canvas class='graph' id="graph_temperature_match_played" height="100%"></canvas>
+        </div>
+      </article>
+    </section>
   </body>
   <script src='js/jquery-3.2.1.min.js'></script>
   <script src='js/moment.min.js'></script>
   <script src='js/Chart.min.js'></script>
   <script src='js/he.js'></script>
+  <script src='js/papaparse.min.js'></script>
+  <script src='js/nouislider.min.js'></script>
   <script src='js/site.js'></script>
 </html>

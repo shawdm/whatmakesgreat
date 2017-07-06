@@ -67,7 +67,7 @@ h2 {
   font-size: 1.25rem;
   font-weight: 700;
   line-height: 1.25rem;
-  display: inline;
+  display: block;
 }
 
 small{
@@ -127,90 +127,6 @@ section.header .divider{
   margin-right: 5px;
 }
 
-
-/*
- * SPARKLINE STYLING
- */
-section.sparklines{
-  border-bottom-style: solid;
-  border-width: 1px;
-  border-color: #e5e5e5;
-  margin-bottom: 1.25rem;
-}
-
-section.sparklines article{
-  width: 20%;
-  text-align: center;
-}
-
-section.sparklines article.timeline_detailed{
-  display: none;
-}
-
-section.sparklines article.homenations{
-  display: none;
-}
-
-section.sparklines article.country_detailed{
-  display: none;
-}
-
-section.sparklines article.concepts{
-  display: none;
-}
-
-section.sparklines article.people_detailed{
-  display: none;
-}
-
-section.sparklines.expanded article{
-  width: 50%;
-}
-
-section.sparklines.expanded article.timeline{
-  display: none;
-}
-
-section.sparklines.expanded article.timeline_detailed{
-  display: inline;
-  width: 100%;
-}
-
-section.sparklines.expanded article.agree_disagree{
-  width: 33%
-}
-
-section.sparklines.expanded article.sentiment{
-  width: 33%
-}
-
-section.sparklines.expanded article.homenations{
-  display: inline;
-  width: 33%
-}
-
-section.sparklines.expanded article.country{
-  display: none;
-}
-
-section.sparklines.expanded article.country_detailed{
-  display: inline;
-  width: 100%;
-}
-
-section.sparklines.expanded article.concepts{
-  display: inline;
-  width: 100%;
-}
-
-section.sparklines.expanded article.people{
-  display: none;
-}
-
-section.sparklines.expanded article.people_detailed{
-  display: inline;
-  width: 100%;
-}
 
 .open-close-wrapper{
   display: flex;
@@ -283,134 +199,38 @@ section.sparklines.expanded .open-close:nth-child(2){
  * Main content styling
  */
 section {
+  width: 100%;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
 }
 
 article {
-  width: 50%;
-  height: auto;
+  width: 100%;
   padding-bottom: 0px;
-  text-align: left;
-  display: flex;
-  flex-direction: row;
   margin-bottom:  1.25rem;
   position: relative;
 }
 
-article .content{
+
+.visualisation{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+
+.visualisation .slider{
+  margin-top: 20px;
+  margin-bottom: 20px;
+  background-color: blue;
+  width: 18px;
+  flex-shrink: 0;
+}
+
+.visualisation  canvas.graph{
+  background-color: red;
   width: auto;
-  position: relative;
-  left: 6px;
-}
-
-article .content p{
-  padding-bottom: 0.5rem;
-  padding-right: 0.4rem;
-}
-
-article .content small.followers{
-    padding-right: 0.4rem;
-}
-
-article .content small a{
-  text-decoration: none;
-}
-
-article .content small a:HOVER{
-  text-decoration: underline;
-}
-
-article .content p:last-child{
-  padding-bottom: 0;
-}
-
-article .source-tag{
-  width: 3px;
-  height: 100%;
-  background-color: yellow;
-  position: absolute;
-  left: 0;
-  top:0;
-}
-
-article.facebook .source-tag{
-  background-color: #F2EBBF;
-}
-
-article.system .source-tag{
-  background-color: #5C4B51;
-}
-
-article.telegraph .source-tag{
-  background-color: #F3B562;
-}
-
-article.twitter .source-tag{
-  background-color: #8CBEB2;
-}
-
-article h2{
-  text-align: left;
-}
-
-article p{
-  text-align: left;
-}
-
-.filters{
-  line-height: 2.8rem;
-  margin-bottom: 0.425rem;
-}
-
-#source_system{
-  display: none;
-}
-
-
-/**
-* POST STYLING
-*/
-img.profile{
-  width: 1.25rem;
-  height: 1.25rem;
-  display: inline;
-  vertical-align: text-bottom;
-}
-
-.network{
-  font-weight: 700;
-  height: 1.25rem;
-  width: 1.25rem;
-  text-align: right;
-  display: inline-block;
-  vertical-align: text-bottom;
-}
-
-article.facebook .network{
-  background-color: #F2EBBF;
-}
-
-article.system .network{
-  background-color: #5C4B51;
-}
-
-article.telegraph .network{
-  background-color: #F3B562;
-}
-
-article.twitter .network{
-  background-color: #8CBEB2;
-}
-
-article.twitter .network.ibmer{
-  background-color: #e5e5e5;
-}
-
-.network span{
-  font-size: 0.4rem;
-  padding-right: 4px;
 }
 
 
@@ -509,6 +329,8 @@ div.end_of_stream{
  */
 
 
+
+
 @media (max-width: 2000px) {
   header.hero {
     height: 571px;
@@ -520,9 +342,7 @@ div.end_of_stream{
     background-image: url(../images/hero/charlie-2000-100.jpg);
   }
 
-  article{
-    width:33.333%;
-  }
+
 }
 
 
@@ -537,9 +357,6 @@ div.end_of_stream{
     background-image: url(../images/hero/charlie-1400-100.jpg);
   }
 
-  article{
-    width:50%;
-  }
 }
 
 
@@ -566,13 +383,6 @@ div.end_of_stream{
     margin-bottom: 0;
   }
 
-  article{
-    width:100%;
-  }
-
-  section.sparklines article{
-    width: 100%;
-  }
 }
 
 
