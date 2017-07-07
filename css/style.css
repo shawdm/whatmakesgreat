@@ -214,23 +214,59 @@ article {
 
 
 .visualisation{
-  width: 100%;
   display: flex;
   flex-direction: row;
 }
 
-
-.visualisation .slider{
-  margin-top: 20px;
-  margin-bottom: 20px;
-  background-color: blue;
-  width: 18px;
-  flex-shrink: 0;
+.visualisation .controls{
+  display: inline-block;
+  width: 40px;
+  background-color: yellow;
 }
 
-.visualisation  canvas.graph{
+.visualisation .graphic{
+  display: inline-block;
+  background-color: green;
+  flex-grow: 1;
+}
+
+
+.slider{
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: blue;
+  width: 40px;
+  height: 300px;
+}
+
+.slider .bar{
+  position: absolute;
+  left: 15px;
+  top: 0px;
+  width: 10px;
+  height: 100%;
+  background-color: pink;
+}
+
+.slider .handle{
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  left: 10px;
+  top: 0px;
   background-color: red;
-  width: auto;
+}
+
+.barchart{
+  height: 300px;
+  position: relative;
+}
+
+.barchart div{
+  background-color: orange;
+  position: absolute;
+  width: 10px;
 }
 
 

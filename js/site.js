@@ -31,11 +31,9 @@ var tempMatchPlayedDefinition = {
   }
 };
 
-
-$(document).ready(function(){
+document.addEventListener('DOMContentLoaded', function(e) {
   init();
 });
-
 
 function init(){
   console.log('doing init');
@@ -43,21 +41,76 @@ function init(){
 }
 
 
+function initTemperatureSlider(min,max){
+  //https://bl.ocks.org/mbostock/6452972
+  console.log('init with ' + min + ' '+ max);
+
+  var slider = d3.select('.slider');
+  var bar = d3.select('.bar');
+  var handle = d3.select('.handle');
+
+
+  var y = d3.scaleLinear()
+    .domain([max, min])
+    .range([0, bar.node().getBoundingClientRect().height - handle.node().getBoundingClientRect().height])
+    .clamp(true);
+
+  handle.call(d3.drag()
+    .on('start.interrupt',function(){
+      handle.interrupt();
+    })
+    .on('start drag',function(e){
+      handle.style('top', y(y.invert(d3.event.y))+'px');
+      updateTemperatureMatchPlayedGraph(Math.round(y.invert(d3.event.y)),Math.round(y.invert(d3.event.y))+1);
+    }));
+}
+
+
+function initTemperatureGraph(data){
+  var barchart = d3.select('.barchart');
+
+  var x = d3.scaleBand().range([0, barchart.node().getBoundingClientRect().width]).padding(0.1);
+  var y = d3.scaleLinear().range([barchart.node().getBoundingClientRect().height, 0]);
+  y.domain([0, d3.max(data, function(d) { return d.matchesPlayed; })]);
+  x.domain(data.map(function(d) { return d.name; }));
+
+
+  d3.select('.barchart').selectAll('div')
+    .data(data)
+    .enter().append('div')
+    .style('height', function(d) {
+      return y(d.matchesPlayed) + 'px';
+    })
+    .style('width', function(d){
+      var width = x.bandwidth()+'px';
+      return width;
+    })
+    .style('left', function(d){
+      var left = x(d.name)+'px';
+      return left;
+    })
+    .style('bottom','0px')
+    .text(function(d) { return d.name; });
+}
+
 function initTemperature(){
-  $.ajax({
-    url: 'data/temperature/matches-played.csv',
-    success: function(data){
-      if(data){
-        Papa.parse(data, {
+  d3.request('data/temperature/matches-played.csv')
+    .on('error', function(error) {
+      console.log('error' + error);
+    })
+    .on('load', function(xhr){
+      console.dir(xhr);
+      if(xhr && xhr.response){
+        Papa.parse(xhr.response, {
           header: true,
           delimiter: ',',
-        	complete: function(results) {
+          complete: function(results){
             if(results && results.meta && results.meta.fields){
               DATA_STORE.temperatureMatchesPlayed = results;
               var min = false;
               var max = false;
               for(var i=0; i < results.meta.fields.length; i++){
-                if(results.meta.fields[i] != "name"){
+                if(results.meta.fields[i] != 'name'){
                   var value = parseFloat(results.meta.fields[i]);
                   if(min === false || value < min){
                     min = value;
@@ -76,39 +129,15 @@ function initTemperature(){
           }
         });
       }
-    }
-  });
+    })
+    .get();
 }
 
-
-function initTemperatureSlider(minValue, maxValue){
-  console.log(minValue + ' ' + maxValue);
-  var slider = $('#temperature')[0];
-  noUiSlider.create(slider, {
-		start: [ minValue, maxValue ],
-    connect: [false, true, false],
-    behaviour: 'drag',
-		orientation: "vertical",
-    step: 1,
-    direction: 'rtl',
-		range: {
-			'min': minValue,
-			'max': maxValue
-		},
-    pips: {
-      mode: 'range',
-      density: 5
-    }
-	});
-  slider.noUiSlider.on('slide', function(data){
-    // max temp always bigger than temp as set so include full range
-    updateTemperatureMatchPlayedGraph(data[0], data[1]+1);
-  });
-}
 
 
 
 function updateTemperatureMatchPlayedGraph(minTemp, maxTemp){
+  console.log('looking for matches played between: ' + minTemp + ' and ' + maxTemp);
   var filteredData = [];
   if(DATA_STORE && DATA_STORE.temperatureMatchesPlayed && DATA_STORE.temperatureMatchesPlayed.data){
     for(var i=0; i < DATA_STORE.temperatureMatchesPlayed.data.length; i++){
@@ -138,18 +167,6 @@ function updateTemperatureMatchPlayedGraph(minTemp, maxTemp){
     }
   }
 
-  if(!temperatureMatchPlayedGraph){
-    var ctx = document.getElementById('graph_temperature_match_played').getContext('2d');
-    temperatureMatchPlayedGraph = new Chart(ctx, tempMatchPlayedDefinition);
-  }
-
-  temperatureMatchPlayedGraph.data.datasets[0].data = [];
-  temperatureMatchPlayedGraph.data.labels = [];
-  for(var i=0; i < filteredData.length; i++){
-    temperatureMatchPlayedGraph.data.datasets[0].data.push(filteredData[i].matchesPlayed);
-    temperatureMatchPlayedGraph.data.labels.push(filteredData[i].name);
-  }
-  temperatureMatchPlayedGraph.update();
-
-
+  console.dir(filteredData);
+  initTemperatureGraph(filteredData);
 }
