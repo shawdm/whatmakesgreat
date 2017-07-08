@@ -254,8 +254,17 @@ article {
   height: 20px;
   position: absolute;
   left: 10px;
+  background-color: grey;
+}
+
+.slider .handle-max{
   top: 0px;
   background-color: red;
+}
+
+.slider .handle-min{
+  top: 280px;
+  background-color: green;
 }
 
 .barchart{

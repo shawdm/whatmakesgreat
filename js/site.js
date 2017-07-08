@@ -1,97 +1,9 @@
 var DATA_STORE = {};
 
-var temperatureMatchPlayedGraph = false;
-
-var tempMatchPlayedDefinition = {
-  type: 'bar',
-  data: {
-    labels: [],
-    datasets: [{
-      label: 'Matches Played',
-      data:[]
-    }]
-  },
-  options: {
-    scales: {
-      yAxes: [{
-        ticks: {
-          beginAtZero:true
-        },
-        display: false
-      }],
-      xAxes: [{
-        ticks: {
-          beginAtZero:true
-        },
-      }]
-    },
-    legend: {
-      display: false
-    }
-  }
-};
-
 document.addEventListener('DOMContentLoaded', function(e) {
-  init();
+  initTemperature();
 });
 
-function init(){
-  console.log('doing init');
-  initTemperature();
-}
-
-
-function initTemperatureSlider(min,max){
-  //https://bl.ocks.org/mbostock/6452972
-  console.log('init with ' + min + ' '+ max);
-
-  var slider = d3.select('.slider');
-  var bar = d3.select('.bar');
-  var handle = d3.select('.handle');
-
-
-  var y = d3.scaleLinear()
-    .domain([max, min])
-    .range([0, bar.node().getBoundingClientRect().height - handle.node().getBoundingClientRect().height])
-    .clamp(true);
-
-  handle.call(d3.drag()
-    .on('start.interrupt',function(){
-      handle.interrupt();
-    })
-    .on('start drag',function(e){
-      handle.style('top', y(y.invert(d3.event.y))+'px');
-      updateTemperatureMatchPlayedGraph(Math.round(y.invert(d3.event.y)),Math.round(y.invert(d3.event.y))+1);
-    }));
-}
-
-
-function initTemperatureGraph(data){
-  var barchart = d3.select('.barchart');
-
-  var x = d3.scaleBand().range([0, barchart.node().getBoundingClientRect().width]).padding(0.1);
-  var y = d3.scaleLinear().range([barchart.node().getBoundingClientRect().height, 0]);
-  y.domain([0, d3.max(data, function(d) { return d.matchesPlayed; })]);
-  x.domain(data.map(function(d) { return d.name; }));
-
-
-  d3.select('.barchart').selectAll('div')
-    .data(data)
-    .enter().append('div')
-    .style('height', function(d) {
-      return y(d.matchesPlayed) + 'px';
-    })
-    .style('width', function(d){
-      var width = x.bandwidth()+'px';
-      return width;
-    })
-    .style('left', function(d){
-      var left = x(d.name)+'px';
-      return left;
-    })
-    .style('bottom','0px')
-    .text(function(d) { return d.name; });
-}
 
 function initTemperature(){
   d3.request('data/temperature/matches-played.csv')
@@ -99,7 +11,6 @@ function initTemperature(){
       console.log('error' + error);
     })
     .on('load', function(xhr){
-      console.dir(xhr);
       if(xhr && xhr.response){
         Papa.parse(xhr.response, {
           header: true,
@@ -120,8 +31,8 @@ function initTemperature(){
                   }
                 }
               }
-              initTemperatureSlider(min,max);
-              updateTemperatureMatchPlayedGraph(min,max+1);
+              initTemperatureSlider(min,max+1);
+              initTemperatureGraph(getFilteredTemperatureData());
             }
         	},
           error: function(err){
@@ -134,10 +45,43 @@ function initTemperature(){
 }
 
 
+function initTemperatureSlider(min,max){
+  //https://bl.ocks.org/mbostock/6452972
+  console.log('init with ' + min + ' '+ max);
+
+  var slider = d3.select('.slider');
+  var bar = d3.select('.bar');
+  var handleMax = d3.select('.handle-max');
+  var handleMin = d3.select('.handle-min');
+
+  var y = d3.scaleLinear()
+    .domain([max, min])
+    .range([0, bar.node().getBoundingClientRect().height - handleMax.node().getBoundingClientRect().height])
+    .clamp(true);
+
+  handleMax.call(d3.drag()
+    .on('start.interrupt',function(){
+      handleMax.interrupt();
+    })
+    .on('start drag',function(e){
+      handleMax.style('top', y(y.invert(d3.event.y))+'px');
+      updateTemperatureMatchPlayedGraph(getFilteredTemperatureData(Math.round(y.invert(parseFloat(handleMin.style('top')))),Math.round(y.invert(d3.event.y))));
+    })
+  );
+
+  handleMin.call(d3.drag()
+    .on('start.interrupt',function(){
+      handleMin.interrupt();
+    })
+    .on('start drag',function(e){
+      handleMin.style('top', y(y.invert(d3.event.y))+'px');
+      updateTemperatureMatchPlayedGraph(getFilteredTemperatureData(Math.round(y.invert(d3.event.y)),Math.round(y.invert(parseFloat(handleMax.style('top'))))));
+    })
+  );
+}
 
 
-function updateTemperatureMatchPlayedGraph(minTemp, maxTemp){
-  console.log('looking for matches played between: ' + minTemp + ' and ' + maxTemp);
+function getFilteredTemperatureData(minTemp, maxTemp){
   var filteredData = [];
   if(DATA_STORE && DATA_STORE.temperatureMatchesPlayed && DATA_STORE.temperatureMatchesPlayed.data){
     for(var i=0; i < DATA_STORE.temperatureMatchesPlayed.data.length; i++){
@@ -154,7 +98,7 @@ function updateTemperatureMatchPlayedGraph(minTemp, maxTemp){
           var temp = parseFloat(field);
           if(temp && DATA_STORE.temperatureMatchesPlayed.data[i][field] && DATA_STORE.temperatureMatchesPlayed.data[i][field].length > 0){
             var matchesPlayed = parseFloat(DATA_STORE.temperatureMatchesPlayed.data[i][field]);
-            if(temp >= minTemp && temp < maxTemp){
+            if(!minTemp || !maxTemp || (temp >= minTemp && temp < maxTemp)){
               playerData.matchesPlayed = playerData.matchesPlayed + matchesPlayed;
             }
           }
@@ -166,7 +110,55 @@ function updateTemperatureMatchPlayedGraph(minTemp, maxTemp){
       }
     }
   }
+  return filteredData;
+}
 
-  console.dir(filteredData);
-  initTemperatureGraph(filteredData);
+
+function initTemperatureGraph(data){
+  var barchart = d3.select('.barchart');
+  var x = d3.scaleBand().range([0, barchart.node().getBoundingClientRect().width]).padding(0.1);
+  var y = d3.scaleLinear().range([0,barchart.node().getBoundingClientRect().height]);
+  y.domain([0, d3.max(data, function(d) { return d.matchesPlayed; })]);
+  x.domain(data.map(function(d) { return d.name; }));
+
+  barchart.selectAll('div')
+    .data(data)
+    .enter().append('div')
+    .style('height', function(d) {
+      return y(d.matchesPlayed) + 'px';
+    })
+    .style('width', function(d){
+      var width = x.bandwidth()+'px';
+      return width;
+    })
+    .style('left', function(d){
+      var left = x(d.name)+'px';
+      return left;
+    })
+    .style('bottom','0px')
+    .text(function(d) { return d.name; });
+}
+
+
+function updateTemperatureMatchPlayedGraph(filteredData){
+  var barchart = d3.select('.barchart');
+  var x = d3.scaleBand().range([0, barchart.node().getBoundingClientRect().width]).padding(0.1);
+  var y = d3.scaleLinear().range([0, barchart.node().getBoundingClientRect().height]);
+  y.domain([0, d3.max(filteredData, function(d) { return d.matchesPlayed; })]);
+  x.domain(filteredData.map(function(d) { return d.name; }));
+
+  barchart.selectAll('div').data(filteredData).transition().duration(200)
+  .style('height', function(d) {
+    return y(d.matchesPlayed) + 'px';
+  })
+  .style('width', function(d){
+    var width = x.bandwidth()+'px';
+    return width;
+  })
+  .style('left', function(d){
+    var left = x(d.name)+'px';
+    return left;
+  })
+  .style('bottom','0px')
+  .text(function(d) { return d.name; });
 }
