@@ -1,5 +1,13 @@
 var DATA_STORE = {};
 var DISPATCH = false;
+var NAMESPACE = 'whatmakesgreat';
+
+var COLOUR_NOT_SELECTED = '#cccccc';
+var COLOUR_SELECTED = '#8CBEB2';
+var OPACITY_NOT_SELECTED = 0.2;
+var OPACITY_SELECTED = 1;
+
+
 
 document.addEventListener('DOMContentLoaded', function(e) {
   initDispatches();
@@ -15,12 +23,13 @@ function initDispatches(){
     updateTemperatureMatchPlayedGraph(getFilteredTemperatureData(DATA_STORE.temperatureMatchesPlayed.data, minTemp,maxTemp));
     updateTemperaturePointsWonGraph(getFilteredTemperatureData(DATA_STORE.temperaturePointsWon.data, minTemp,maxTemp));
     changeTemperatureSlider(d3.select('.temp-matches-played .slider'),this ,minTemp,maxTemp);
-    changeTemperatureSlider(d3.select('.temp-matches-won .slider'),this, minTemp,maxTemp);
+    changeTemperatureSlider(d3.select('.temp-points-won .slider'),this, minTemp,maxTemp);
   });
 
   DISPATCH.on('playerchange', function(){
-    console.log('dispatch a player change');
-    console.dir(this);
+    updateTemperaturePlayerPointsWonGraphSelected(this.name);
+    updateTemperatureMatchPlayedGraphSelected(DATA_STORE.temperatureMatchesPlayed.data, this.name);
+    updateTemperaturePointsWonGraphSelected(DATA_STORE.temperatureMatchesPlayed.data, this.name);
   });
 }
 
@@ -52,7 +61,7 @@ function initTemperatureMatchPlayed(){
                 }
               }
               initTemperatureSlider(d3.select('.temp-matches-played .slider'),min,max+1);
-              initTemperatureSlider(d3.select('.temp-matches-won .slider'),min,max+1);
+              initTemperatureSlider(d3.select('.temp-points-won .slider'),min,max+1);
               initTemperatureGraph(getFilteredTemperatureData(DATA_STORE.temperatureMatchesPlayed.data));
             }
         	},
@@ -78,8 +87,22 @@ function initTemperaturePointsWon(){
           delimiter: ',',
           complete: function(results){
             if(results && results.meta && results.meta.fields){
+              var min = false;
+              var max = false;
+              for(var i=0; i < results.meta.fields.length; i++){
+                if(results.meta.fields[i] != 'name'){
+                  var value = parseFloat(results.meta.fields[i]);
+                  if(min === false || value < min){
+                    min = value;
+                  }
+                  if(max === false || value > max){
+                    max = value;
+                  }
+                }
+              }
               DATA_STORE.temperaturePointsWon = results;
               initTemperaturePointsWonGraph(getFilteredTemperatureData(DATA_STORE.temperaturePointsWon.data));
+              initTemperaturePlayerPointsWonGraph(getFilteredTemperatureData(DATA_STORE.temperaturePointsWon.data),min,max, 'andy murray');
             }
         	},
           error: function(err){
@@ -94,7 +117,6 @@ function initTemperaturePointsWon(){
 
 //https://bl.ocks.org/mbostock/6452972
 function initTemperatureSlider(slider, min,max){
-
   var bar = slider.select('.bar');
   var handleMax = slider.select('.handle-max');
   var handleMin = slider.select('.handle-min');
@@ -150,14 +172,17 @@ function changeTemperatureSlider(slider, sourceOfChange, min, max){
 }
 
 
-function getFilteredTemperatureData(data, minTemp, maxTemp){
+function getFilteredTemperatureData(data, minTemp, maxTemp, player){
   var filteredData = [];
   if(data){
     for(var i=0; i < data.length; i++){
       var playerData = {
         name:false,
         sum: 0,
-        items: 0,
+        itemCount: 0,
+        values: [],
+        fields: [],
+        items: [],
         mean:0
       };
 
@@ -171,23 +196,53 @@ function getFilteredTemperatureData(data, minTemp, maxTemp){
             var value = parseFloat(data[i][field]);
             if(!minTemp || !maxTemp || (temp >= minTemp && temp < maxTemp)){
               playerData.sum = playerData.sum + value;
-              playerData.items++;
+              playerData.itemCount++;
+              playerData.fields.push(field);
+              playerData.values.push(value);
+              playerData.items.push({
+                field:field,
+                value: value
+              });
             }
           }
         }
       }
 
       if(playerData && playerData.name){
-        if(playerData.items > 0){
-          playerData.mean = playerData.sum / playerData.items;
+        if(playerData.itemCount > 0){
+          playerData.mean = playerData.sum / playerData.itemCount;
         }
-        filteredData.push(playerData);
+
+        // no filter based on player
+        if(!player){
+          filteredData.push(playerData);
+        }
+        else if(player === playerData.name){
+          filteredData.push(playerData);
+        }
       }
     }
   }
   return filteredData;
 }
 
+
+function compressData(data){
+  var compressedData =[];
+  if(data){
+    for(var i=0; i < data.length; i++){
+      if(data[i] && data[i].items){
+        for(var j=0; j<data[i].items.length; j++){
+          var item =   data[i].items[j];
+          item.name = data[i].name;
+          item.id = data[i].name;
+          compressedData.push(item);
+        }
+      }
+    }
+  }
+  return compressedData;
+}
 
 function initTemperatureGraph(data){
   var barchart = d3.select('.temp-matches-played .barchart');
@@ -218,6 +273,33 @@ function initTemperatureGraph(data){
 }
 
 
+function updateTemperatureMatchPlayedGraphSelected(filteredData, selectedPlayer){
+  var barchart = d3.select('.temp-matches-played .barchart');
+  barchart.selectAll('div').data(filteredData)
+  .classed('selected', function(d){
+    if(d.name && d.name===selectedPlayer){
+      return true;
+    }
+    else{
+      return false;
+    }
+  });
+}
+
+function updateTemperaturePointsWonGraphSelected(filteredData, selectedPlayer){
+  var barchart = d3.select('.temp-points-won .barchart');
+  barchart.selectAll('div').data(filteredData)
+  .classed('selected', function(d){
+    if(d.name && d.name===selectedPlayer){
+      return true;
+    }
+    else{
+      return false;
+    }
+  });
+}
+
+
 function updateTemperatureMatchPlayedGraph(filteredData){
   var barchart = d3.select('.temp-matches-played .barchart');
   var x = d3.scaleBand().range([0, barchart.node().getBoundingClientRect().width]).padding(0.1);
@@ -243,7 +325,7 @@ function updateTemperatureMatchPlayedGraph(filteredData){
 
 
 function initTemperaturePointsWonGraph(data){
-  var barchart = d3.select('.temp-matches-won .barchart');
+  var barchart = d3.select('.temp-points-won .barchart');
   var x = d3.scaleBand().range([0, barchart.node().getBoundingClientRect().width]).padding(0.1);
   var y = d3.scaleLinear().range([0,barchart.node().getBoundingClientRect().height]);
   y.domain([0, d3.max(data, function(d) { return d.mean; })]);
@@ -271,25 +353,156 @@ function initTemperaturePointsWonGraph(data){
 }
 
 
-function updateTemperaturePointsWonGraph(filteredData){
-  var barchart = d3.select('.temp-matches-won .barchart');
+function updateTemperaturePointsWonGraph(data){
+  var barchart = d3.select('.temp-points-won .barchart');
   var x = d3.scaleBand().range([0, barchart.node().getBoundingClientRect().width]).padding(0.1);
-  var y = d3.scaleLinear().range([0, barchart.node().getBoundingClientRect().height]);
-  y.domain([0, d3.max(filteredData, function(d) { return d.mean; })]);
-  x.domain(filteredData.map(function(d) { return d.name; }));
+  var y = d3.scaleLinear().range([0,barchart.node().getBoundingClientRect().height]);
+  y.domain([0, d3.max(data, function(d) { return d.mean; })]);
+  x.domain(data.map(function(d) { return d.name; }));
 
-  barchart.selectAll('div').data(filteredData).transition().duration(200)
-  .style('height', function(d) {
-    return y(d.mean) + 'px';
+  barchart.selectAll('div')
+    .data(data).transition().duration(200)
+    .style('height', function(d) {
+      return y(d.mean) + 'px';
+    })
+    .style('width', function(d){
+      var width = x.bandwidth()+'px';
+      return width;
+    })
+    .style('left', function(d){
+      var left = x(d.name)+'px';
+      return left;
+    })
+    .style('bottom','0px')
+    .text(function(d) { return d.name; });
+}
+
+
+function initTemperaturePlayerPointsWonGraph(filteredData, minTemp, maxTemp){
+  filteredData = compressData(filteredData);
+
+  var minPercent = d3.min(filteredData, function(d){
+    return d.value;
+  });
+
+  var maxPercent = d3.max(filteredData, function(d){
+    return d.value;
+  });
+
+  // Nest the entries by symbol
+  var dataNest = d3.nest()
+    .key(function(d) {
+      return d.id;
+    })
+    .entries(filteredData);
+
+  var axisSize = 25;
+  var linechart = d3.select('.temp-player-points-won .linechart');
+
+  var x = d3.scaleLinear().range([axisSize, linechart.node().getBoundingClientRect().width]);
+  var y = d3.scaleLinear().range([0, linechart.node().getBoundingClientRect().height - axisSize]);
+  var z = d3.scaleOrdinal(d3.schemeCategory10);
+
+  y.domain([maxPercent, minPercent]);
+  x.domain([minTemp, maxTemp]);
+  z.domain(dataNest.map(function(c) { return c.key; }));
+
+  var valueline = d3.line()
+    .x(function(d){
+      return x(d.field);
+    })
+    .y(function(d){
+      return y(d.value);
+    }
+  );
+
+  linechart.selectAll('circle').data(filteredData)
+    .enter().append('circle')
+    .attr(NAMESPACE+'-key',function(d){
+      return d.id;
+    })
+    .attr('cx', function (d) {
+      return x(d.field);
+    })
+    .attr('cy', function (d) { return y(d.value); })
+    .attr('r', function (d) { return 4; })
+    .style('fill-opacity',OPACITY_NOT_SELECTED)
+    .style('fill', COLOUR_NOT_SELECTED)
+    .style('cursor', 'pointer')
+    .on('click', function(data) {
+      data.name = data.id;
+      DISPATCH.call('playerchange', data);
+      d3.event.stopPropagation();
+    });
+
+
+  linechart.selectAll('path').data(dataNest)
+  .enter().append('path')
+  .attr(NAMESPACE+'-key',function(d){
+    return d.key;
   })
-  .style('width', function(d){
-    var width = x.bandwidth()+'px';
-    return width;
+  .attr('class', 'line')
+  .style('stroke', COLOUR_NOT_SELECTED)
+  .style('stroke-opacity',OPACITY_NOT_SELECTED)
+  .style('cursor', 'pointer')
+  .attr('d', function(d){
+    return valueline(d.values);
   })
-  .style('left', function(d){
-    var left = x(d.name)+'px';
-    return left;
+  .on('click', function(data) {
+    data.name = data.key;
+    DISPATCH.call('playerchange', data);
+    d3.event.stopPropagation();
+  });
+
+  // Add the X Axis
+  var yShift = linechart.node().getBoundingClientRect().height - axisSize;
+  linechart.append('g')
+    .attr('transform', 'translate(0,'+yShift+')')
+    .call(d3.axisBottom(x));
+
+  // Add the Y Axis
+  linechart.append('g')
+    .attr('transform', 'translate('+axisSize+',0)')
+    .call(d3.axisLeft(y));
+}
+
+
+function updateTemperaturePlayerPointsWonGraphSelected(selectedPlayer){
+  var linechart = d3.select('.temp-player-points-won .linechart');
+  linechart.selectAll('path').transition().duration(200)
+  .style('stroke', function() {
+    if(d3.select(this).attr(NAMESPACE+'-key') && d3.select(this).attr(NAMESPACE+'-key') === selectedPlayer){
+      return COLOUR_SELECTED;
+    }
+    else{
+      return COLOUR_NOT_SELECTED;
+    }
   })
-  .style('bottom','0px')
-  .text(function(d) { return d.name; });
+  .style('stroke-opacity', function() {
+    if(d3.select(this).attr(NAMESPACE+'-key') && d3.select(this).attr(NAMESPACE+'-key') === selectedPlayer){
+      return OPACITY_SELECTED;
+    }
+    else{
+      return OPACITY_NOT_SELECTED;
+    }
+  });
+
+  linechart.selectAll('circle').transition().duration(200)
+  .style('fill', function() {
+    if(d3.select(this).attr(NAMESPACE+'-key') && d3.select(this).attr(NAMESPACE+'-key') === selectedPlayer){
+      return COLOUR_SELECTED;
+    }
+    else{
+      return COLOUR_NOT_SELECTED;
+    }
+  })
+  .style('fill-opacity', function() {
+    if(d3.select(this).attr(NAMESPACE+'-key') && d3.select(this).attr(NAMESPACE+'-key') === selectedPlayer){
+      return OPACITY_SELECTED;
+    }
+    else{
+      return OPACITY_NOT_SELECTED;
+    }
+  });
+
 }

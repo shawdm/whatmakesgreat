@@ -226,7 +226,6 @@ article {
 
 .visualisation .graphic{
   display: inline-block;
-  background-color: green;
   flex-grow: 1;
 }
 
@@ -273,9 +272,28 @@ article {
 }
 
 .barchart div{
-  background-color: orange;
+  background-color: rgba(204,204,204,0.2);
   position: absolute;
-  width: 10px;
+  cursor: pointer;
+}
+
+
+.barchart div.selected{
+  background-color: rgba(140, 190, 178, 1);
+}
+
+
+
+.linechart{
+  height: 300px;
+  width:100%;
+  position: relative;
+}
+
+.linechart .line {
+  fill: none;
+  /*stroke: steelblue;*/
+  stroke-width: 2px;
 }
 
 
