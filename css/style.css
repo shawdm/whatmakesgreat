@@ -13,6 +13,7 @@ body, h1, h2, h3, h4, h5, h6, p, blockquote, pre, hr, dl, dd, ol, ul, figure, im
  */
 html, body, div {
   box-sizing: border-box;
+
 }
 
 
@@ -38,6 +39,7 @@ body {
   padding-right: 10px;
   margin-left: auto;
   margin-right: auto;
+  min-width: 600px;
 }
 
 
@@ -221,7 +223,6 @@ article {
 .visualisation .controls{
   display: inline-block;
   width: 40px;
-  background-color: yellow;
 }
 
 .visualisation .graphic{
@@ -234,7 +235,6 @@ article {
   position: relative;
   margin-left: auto;
   margin-right: auto;
-  background-color: blue;
   width: 40px;
   height: 300px;
 }
@@ -242,10 +242,10 @@ article {
 .slider .bar{
   position: absolute;
   left: 15px;
-  top: 0px;
   width: 10px;
   height: 100%;
-  background-color: pink;
+  background-color: rgba(204,204,204,0.2);
+  border-radius: 20px;
 }
 
 .slider .handle{
@@ -254,16 +254,19 @@ article {
   position: absolute;
   left: 10px;
   background-color: grey;
+  opacity: 1;
+  cursor: pointer;
 }
 
 .slider .handle-max{
   top: 0px;
-  background-color: red;
+  background-color: #F06060;
+
 }
 
 .slider .handle-min{
   top: 280px;
-  background-color: green;
+  background-color: #8CBEB2;
 }
 
 .barchart{
@@ -275,14 +278,29 @@ article {
   background-color: rgba(204,204,204,0.2);
   position: absolute;
   cursor: pointer;
+  text-align: center;
 }
 
+.barchart div span{
+  text-transform: uppercase;
+  font-size: 0.625rem;
+  line-height: 0.75rem;
+  padding: 4px;
+  display: block;
+}
+
+.barchart div span.mean, .barchart div span.count{
+  font-size: 1.25rem;
+}
 
 .barchart div.selected{
   background-color: rgba(140, 190, 178, 1);
+
 }
 
-
+.barchart div.selected span{
+    color: #fff;
+}
 
 .linechart{
   height: 300px;
@@ -292,7 +310,6 @@ article {
 
 .linechart .line {
   fill: none;
-  /*stroke: steelblue;*/
   stroke-width: 2px;
 }
 
