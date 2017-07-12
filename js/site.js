@@ -86,7 +86,7 @@ function initFedererPespire(){
 
 function refreshPerspireQuote(){
   if(DATA_STORE.perspireQuotes && DATA_STORE.perspireQuotes.length > 0){
-    var randomIndex = Math.round(d3.randomUniform(0, DATA_STORE.perspireQuotes.length)());
+    var randomIndex = Math.floor(d3.randomUniform(0, DATA_STORE.perspireQuotes.length)());
     d3.select('.federer-perspired p.quote span.text').html(DATA_STORE.perspireQuotes[randomIndex].text);
     d3.select('.federer-perspired span.source').text(DATA_STORE.perspireQuotes[randomIndex].source);
   }
@@ -121,6 +121,7 @@ function initTemperatureMatchPlayed(){
               initTemperatureSlider(d3.select('.temp-matches-played .slider'),min,max+1);
               initTemperatureSlider(d3.select('.temp-points-won .slider'),min,max+1);
               initTemperatureMatchPlayedGraph(getFilteredTemperatureData(DATA_STORE.temperatureMatchesPlayed.data));
+              updateTemperatureMatchPlayedTitle(false,min,max);
             }
         	},
           error: function(err){
@@ -163,6 +164,7 @@ function initTemperaturePointsWon(){
               DATA_STORE.absolute_max_temp = max;
               initTemperaturePointsWonGraph(getFilteredTemperatureData(DATA_STORE.temperaturePointsWon.data));
               initTemperaturePlayerPointsWonGraph(getFilteredTemperatureData(DATA_STORE.temperaturePointsWon.data),  DATA_STORE.absolute_min_temp,  DATA_STORE.absolute_max_temp, 'andy murray');
+              updateTemperaturePointsWonTitle(false,min,max);
             }
         	},
           error: function(err){
@@ -363,12 +365,9 @@ function initTemperatureMatchPlayedGraph(data){
 
 
 function updateTemperatureMatchPlayedTitle(player, minTemp, maxTemp){
-  var text = 'Games Played by Player';
+  var text = text = 'Games Played by Player Between '+minTemp + String.fromCharCode(176) + 'C and ' + maxTemp +String.fromCharCode(176)+'C';
 
-  if((minTemp && minTemp <= DATA_STORE.absolute_min_temp) && (maxTemp && maxTemp >= DATA_STORE.absolute_max_temp)){
-    text = 'Games Played by Player';
-  }
-  else if(minTemp && (!maxTemp ||maxTemp>=DATA_STORE.absolute_max_temp)){
+  if(minTemp && (!maxTemp ||maxTemp>=DATA_STORE.absolute_max_temp)){
     text += ' Above ' + minTemp + String.fromCharCode(176) + 'C';
   }
   else if(maxTemp && (!minTemp || minTemp <= DATA_STORE.absolute_min_temp)){
@@ -555,16 +554,7 @@ function updateTemperaturePointsWonGraph(data){
 function updateTemperaturePointsWonTitle(player, minTemp, maxTemp){
   var text = 'Percentage of Points Won by Player';
 
-  if((minTemp && minTemp <= DATA_STORE.absolute_min_temp) && (maxTemp && maxTemp >= DATA_STORE.absolute_max_temp)){
-    text = 'Percentage of Points Won by Player';
-  }
-  else if(minTemp && (!maxTemp ||maxTemp>=DATA_STORE.absolute_max_temp)){
-    text += ' Above ' + minTemp + String.fromCharCode(176) + 'C';
-  }
-  else if(maxTemp && (!minTemp || minTemp <= DATA_STORE.absolute_min_temp)){
-    text += ' Below ' + maxTemp + String.fromCharCode(176) + 'C';
-  }
-  else if(maxTemp && minTemp){
+  if(maxTemp && minTemp){
     text += ' Between ' + minTemp + String.fromCharCode(176) + 'C and ' + maxTemp + String.fromCharCode(176)+'C';
   }
 
@@ -574,17 +564,7 @@ function updateTemperaturePointsWonTitle(player, minTemp, maxTemp){
 
 function updateTemperatureMatchPlayedTitle(player, minTemp, maxTemp){
   var text = 'Games Played by Player';
-
-  if((minTemp && minTemp <= DATA_STORE.absolute_min_temp) && (maxTemp && maxTemp >= DATA_STORE.absolute_max_temp)){
-    text = 'Games Played by Player';
-  }
-  else if(minTemp && (!maxTemp ||maxTemp>=DATA_STORE.absolute_max_temp)){
-    text += ' Above ' + minTemp + String.fromCharCode(176) + 'C';
-  }
-  else if(maxTemp && (!minTemp || minTemp <= DATA_STORE.absolute_min_temp)){
-    text += ' Below ' + maxTemp + String.fromCharCode(176) + 'C';
-  }
-  else if(maxTemp && minTemp){
+  if(maxTemp && minTemp){
     text += ' Between ' + minTemp + String.fromCharCode(176) + 'C and ' + maxTemp + String.fromCharCode(176)+'C';
   }
 

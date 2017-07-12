@@ -58,6 +58,7 @@ h1 {
   font-size: 2.8rem;
   line-height: 2.8rem;
   font-weight: 700;
+  margin-bottom: 2.5rem;
 }
 
 h1 span.date {
@@ -69,6 +70,21 @@ h2 {
   font-weight: 700;
   line-height: 1.25rem;
   display: block;
+  margin-bottom: 1.25rem;
+}
+
+
+h3{
+  font-weight: normal;
+  font-size: 0.625rem;
+}
+
+h3 a{
+  text-decoration: none;
+}
+
+h3 a:HOVER{
+  text-decoration: underline;
 }
 
 small{
@@ -79,10 +95,20 @@ a {
   color: #111;
 }
 
+blockquote{
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 p {
   padding-left: 0;
   padding-right: 0;
   line-height: 1.25rem;
+  margin-bottom: 1.25rem;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 img {
@@ -209,7 +235,7 @@ section {
 article {
   width: 100%;
   padding-bottom: 0px;
-  margin-bottom:  5rem;
+  margin-bottom:  2.5rem;
   position: relative;
 }
 
@@ -225,6 +251,8 @@ article.federer-perspired blockquote{
   margin-top: 10px;
   margin-bottom: 0px;
 }
+
+
 
 article.federer-perspired p.quote span.text{
 }
@@ -242,6 +270,11 @@ article.federer-perspired div.update{
   margin-top: 1rem;
   text-align: center;
 }
+
+article.embed{
+  text-align: center;
+}
+
 
 
 a.action{
@@ -275,6 +308,24 @@ a.action:HOVER{
   flex-grow: 1;
 }
 
+.visualisation .caption{
+  width: 100px;
+  position: relative;
+}
+
+.visualisation .caption p{
+  position: absolute;
+  bottom: 0px;
+  margin-bottom: 0;
+  font-style: italic;
+  font-size: 0.625rem;
+  line-height: 0.75rem;
+  width: 100%;
+}
+
+.visualisation .caption.left p{
+  text-align: right;
+}
 
 .slider{
   position: relative;
