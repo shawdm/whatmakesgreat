@@ -54,7 +54,6 @@ function initDispatches(){
 
 
 function initFedererPespire(){
-  console.log('perspiring...');
   d3.request('data/temperature/federer-sweat.csv')
     .on('error', function(error) {
       console.log('error' + error);
@@ -88,7 +87,7 @@ function initFedererPespire(){
 function refreshPerspireQuote(){
   if(DATA_STORE.perspireQuotes && DATA_STORE.perspireQuotes.length > 0){
     var randomIndex = Math.round(d3.randomUniform(0, DATA_STORE.perspireQuotes.length)());
-    d3.select('.federer-perspired p').html(DATA_STORE.perspireQuotes[randomIndex].text);
+    d3.select('.federer-perspired p.quote span.text').html(DATA_STORE.perspireQuotes[randomIndex].text);
     d3.select('.federer-perspired span.source').text(DATA_STORE.perspireQuotes[randomIndex].source);
   }
 }

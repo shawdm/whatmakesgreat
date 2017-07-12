@@ -55,8 +55,7 @@ h1 a{
 }
 
 h1 {
-  text-align: left;
-  font-size: 1.4rem;
+  font-size: 2.8rem;
   line-height: 2.8rem;
   font-weight: 700;
 }
@@ -210,10 +209,56 @@ section {
 article {
   width: 100%;
   padding-bottom: 0px;
-  margin-bottom:  1.25rem;
+  margin-bottom:  5rem;
   position: relative;
 }
 
+article.federer-perspired p{
+  font-style: italic;
+  font-size: 1.25rem;
+  line-height: 1.6rem;
+  margin-left: 80px;
+  margin-right: 80px;
+}
+
+article.federer-perspired blockquote{
+  margin-top: 10px;
+  margin-bottom: 0px;
+}
+
+article.federer-perspired p.quote span.text{
+}
+
+article.federer-perspired p.quote span.quote-mark{
+  font-size: 1.4rem;
+}
+
+article.federer-perspired p.quote span.source{
+  font-size: 1rem;
+  font-style: normal;
+}
+
+article.federer-perspired div.update{
+  margin-top: 1rem;
+  text-align: center;
+}
+
+
+a.action{
+  color: #fff;
+  background-color: #8CBEB2;
+  padding-top: 4px;
+  padding-bottom: 6px;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+a.action:HOVER{
+  background-color: #F2EBBF;
+  color: #5C4B51;
+}
 
 .visualisation{
   display: flex;
