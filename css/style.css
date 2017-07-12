@@ -272,6 +272,7 @@ article {
 .barchart{
   height: 300px;
   position: relative;
+  overflow: hidden;
 }
 
 .barchart div{

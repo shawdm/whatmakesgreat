@@ -17,30 +17,81 @@ window.addEventListener('resize', function(){
 
 document.addEventListener('DOMContentLoaded', function(e) {
   initDispatches();
+  initFedererPespire();
   initTemperatureMatchPlayed();
   initTemperaturePointsWon();
 });
 
 
 function initDispatches(){
-  DISPATCH = d3.dispatch('tempchange','playerchange');
+  DISPATCH = d3.dispatch('tempchange','playerchange','quoterefresh');
+
+  d3.select('.federer-perspired a').on('click', function(){
+    DISPATCH.call('quoterefresh', this);
+  });
 
   DISPATCH.on('tempchange', function(minTemp, maxTemp){
     DATA_STORE.minTemp = minTemp;
     DATA_STORE.maxTemp = maxTemp;
     updateTemperatureMatchPlayedGraph(getFilteredTemperatureData(DATA_STORE.temperatureMatchesPlayed.data,DATA_STORE.minTemp,DATA_STORE.maxTemp));
+    updateTemperatureMatchPlayedTitle(DATA_STORE.player, DATA_STORE.minTemp, DATA_STORE.maxTemp);
     updateTemperaturePointsWonGraph(getFilteredTemperatureData(DATA_STORE.temperaturePointsWon.data,DATA_STORE.minTemp,DATA_STORE.maxTemp));
+    updateTemperaturePointsWonTitle(DATA_STORE.player, DATA_STORE.minTemp, DATA_STORE.maxTemp);
     changeTemperatureSlider(d3.select('.temp-matches-played .slider'), this, DATA_STORE.minTemp, DATA_STORE.maxTemp);
     changeTemperatureSlider(d3.select('.temp-points-won .slider'), this, DATA_STORE.minTemp, DATA_STORE.maxTemp);
+
   });
 
   DISPATCH.on('playerchange', function(){
+    DATA_STORE.player = this.name;
     updateTemperaturePlayerPointsWonGraphSelected(this.name);
     updateTemperatureMatchPlayedGraphSelected(DATA_STORE.temperatureMatchesPlayed.data, this.name);
     updateTemperaturePointsWonGraphSelected(DATA_STORE.temperatureMatchesPlayed.data, this.name);
   });
+
+  DISPATCH.on('quoterefresh', refreshPerspireQuote);
 }
 
+
+function initFedererPespire(){
+  console.log('perspiring...');
+  d3.request('data/temperature/federer-sweat.csv')
+    .on('error', function(error) {
+      console.log('error' + error);
+    })
+    .on('load', function(xhr){
+      if(xhr && xhr.response){
+        Papa.parse(xhr.response, {
+          header: true,
+          delimiter: ',',
+          complete: function(results){
+            if(results && results.data){
+              DATA_STORE.perspireQuotes = [];
+              for(var i=0; i < results.data.length; i++){
+                if(results.data[i] && results.data[i].text && results.data[i].source){
+                  DATA_STORE.perspireQuotes.push(results.data[i]);
+                }
+              }
+              DISPATCH.call('quoterefresh', this);
+            }
+        	},
+          error: function(err){
+            console.log(err);
+          }
+        });
+      }
+    })
+    .get();
+}
+
+
+function refreshPerspireQuote(){
+  if(DATA_STORE.perspireQuotes && DATA_STORE.perspireQuotes.length > 0){
+    var randomIndex = Math.round(d3.randomUniform(0, DATA_STORE.perspireQuotes.length)());
+    d3.select('.federer-perspired p').html(DATA_STORE.perspireQuotes[randomIndex].text);
+    d3.select('.federer-perspired span.source').text(DATA_STORE.perspireQuotes[randomIndex].source);
+  }
+}
 
 function initTemperatureMatchPlayed(){
   d3.request('data/temperature/matches-played.csv')
@@ -143,11 +194,13 @@ function initTemperatureSlider(slider, min,max){
     .on('start drag',function(e){
       var handleMinTemp = Math.round(y.invert(parseFloat(handleMin.style('top'))));
       var handleMaxTemp = Math.round(y.invert(d3.event.y));
+
       if(d3.event.y + handleMax.node().getBoundingClientRect().height <= parseFloat(handleMin.style('top'))){
         handleMax.style('top', y(y.invert(d3.event.y))+'px');
       }
       else{
         handleMax.style('top', parseFloat(handleMin.style('top'))-handleMax.node().getBoundingClientRect().height+'px');
+        handleMaxTemp = handleMinTemp;
       }
       DISPATCH.call('tempchange', this, handleMinTemp, handleMaxTemp);
     })
@@ -165,6 +218,7 @@ function initTemperatureSlider(slider, min,max){
       }
       else{
         handleMin.style('top', parseFloat(handleMax.style('top'))+handleMin.node().getBoundingClientRect.height + 'px');
+        handleMinTemp = handleMaxTemp;
       }
       DISPATCH.call('tempchange', this, handleMinTemp, handleMaxTemp);
     })
@@ -306,6 +360,26 @@ function initTemperatureMatchPlayedGraph(data){
     })
     .attr('class', 'count');
 
+}
+
+
+function updateTemperatureMatchPlayedTitle(player, minTemp, maxTemp){
+  var text = 'Games Played by Player';
+
+  if((minTemp && minTemp <= DATA_STORE.absolute_min_temp) && (maxTemp && maxTemp >= DATA_STORE.absolute_max_temp)){
+    text = 'Games Played by Player';
+  }
+  else if(minTemp && (!maxTemp ||maxTemp>=DATA_STORE.absolute_max_temp)){
+    text += ' Above ' + minTemp + String.fromCharCode(176) + 'C';
+  }
+  else if(maxTemp && (!minTemp || minTemp <= DATA_STORE.absolute_min_temp)){
+    text += ' Below ' + maxTemp + String.fromCharCode(176) + 'C';
+  }
+  else if(maxTemp && minTemp){
+    text += ' Between ' + minTemp + String.fromCharCode(176) + 'C and ' + maxTemp + String.fromCharCode(176)+'C';
+  }
+
+  d3.select('article.temp-matches-played h2').text(text);
 }
 
 
@@ -479,6 +553,44 @@ function updateTemperaturePointsWonGraph(data){
   });
 }
 
+function updateTemperaturePointsWonTitle(player, minTemp, maxTemp){
+  var text = 'Percentage of Points Won by Player';
+
+  if((minTemp && minTemp <= DATA_STORE.absolute_min_temp) && (maxTemp && maxTemp >= DATA_STORE.absolute_max_temp)){
+    text = 'Percentage of Points Won by Player';
+  }
+  else if(minTemp && (!maxTemp ||maxTemp>=DATA_STORE.absolute_max_temp)){
+    text += ' Above ' + minTemp + String.fromCharCode(176) + 'C';
+  }
+  else if(maxTemp && (!minTemp || minTemp <= DATA_STORE.absolute_min_temp)){
+    text += ' Below ' + maxTemp + String.fromCharCode(176) + 'C';
+  }
+  else if(maxTemp && minTemp){
+    text += ' Between ' + minTemp + String.fromCharCode(176) + 'C and ' + maxTemp + String.fromCharCode(176)+'C';
+  }
+
+  d3.select('article.temp-points-won h2').text(text);
+}
+
+
+function updateTemperatureMatchPlayedTitle(player, minTemp, maxTemp){
+  var text = 'Games Played by Player';
+
+  if((minTemp && minTemp <= DATA_STORE.absolute_min_temp) && (maxTemp && maxTemp >= DATA_STORE.absolute_max_temp)){
+    text = 'Games Played by Player';
+  }
+  else if(minTemp && (!maxTemp ||maxTemp>=DATA_STORE.absolute_max_temp)){
+    text += ' Above ' + minTemp + String.fromCharCode(176) + 'C';
+  }
+  else if(maxTemp && (!minTemp || minTemp <= DATA_STORE.absolute_min_temp)){
+    text += ' Below ' + maxTemp + String.fromCharCode(176) + 'C';
+  }
+  else if(maxTemp && minTemp){
+    text += ' Between ' + minTemp + String.fromCharCode(176) + 'C and ' + maxTemp + String.fromCharCode(176)+'C';
+  }
+
+  d3.select('article.temp-matches-played h2').text(text);
+}
 
 function initTemperaturePlayerPointsWonGraph(filteredData, minTemp, maxTemp){
   filteredData = compressData(filteredData);
