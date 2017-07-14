@@ -30,6 +30,11 @@ function initDispatches(){
     DISPATCH.call('quoterefresh', this);
   });
 
+  d3.selectAll('a.player-action').on('click',function(){
+    var name = d3.select(this).attr('data-name');
+    DISPATCH.call('playerchange', {name:name});
+  });
+
   DISPATCH.on('tempchange', function(minTemp, maxTemp){
     DATA_STORE.minTemp = minTemp;
     DATA_STORE.maxTemp = maxTemp;
