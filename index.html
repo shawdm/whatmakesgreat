@@ -12,6 +12,7 @@
       <h3><a href="https://twitter.com/hashtag/whatmakesgreat?src=hash">#WhatMakesGreat</a></h3>
     </section>
     <section>
+
       <article class='federer-perspired'>
         <h1>Has Roger Federer Perspired?</h1>
         <blockquote>
@@ -22,20 +23,29 @@
         </blockquote>
         <div class='update'><a href='#' class='action'>How about now?</a></div>
       </article>
+
       <article>
         <p>
-          I’m a developer at IBM. For the last few months I’ve been working on our #whatmakesgreat campaign, showcasing how we use analytics at Wimbledon. The challenge set was to combine statistical analysis, machine learning understanding of unstructured data and human knowledge from tennis experts to understand what makes a great Wimbledon champion.  Our task was to answer this using unstructured data.
+          Roger Federer doesn’t sweat. Tennis fans know this.
         </p>
         <p>
-          We based the project around Watson Discovery Service (WDS). This is a document indexing and analytics tool. It’s used in a similar way to something like Elastic Search. The difference being that on top of the standard indexes and aggregations, you can index against inferred data, which might be a disambiguated person, a sentiment, an emotion or a topic. The source documents came from 25 years of the Telegraph and Wimbledon’s own archives.
+          I'm a developer at IBM. For the last three months I’ve been working on our #whatmakesgreat campaign, showcasing the use analytics at Wimbledon. Before the tournament ends I wanted to explain how we ended up discussing Roger Federer's perspiration and Rafael Nadal’s preference for sunshine.
         </p>
         <p>
-          Once all the documents were indexed into WDS I wanted to get a feel for what they contained. I ran an aggregation, grouping by person and used a TF-IDF analysis to find the words closely associated with each player. Intriguingly (to me) ‘sweat’ was showing a statically significant correlation to Roger Federer. Does he work harder than the other players? Does he have a problem with perspiration? Or is he sponsored by a deodorant company? It turned out to be the opposite, Roger Federer does not sweat. The volume of articles and comments about this was ridiculous. More people talk about Federer’s sweat than many player’s serves. This is why I’m not a tennis fan. I looked more closely at the other players, but they didn’t have anything like the same connection, only... Nadal. He might sweat, but journalists and fans say he doesn’t play well in the cold. He prefers the heat and sunshine. He’s from Mallorca the standard thinking goes, of course he’ll do better in a mediterranean climate. This seems a little bit convenient, can this really be true?
+          The technical challenge in #whatmakesgreat was to combine tennis statistics, unstructured data (25 years of the Telegraph's and Wimbledon’s archives), the experience of tennis players and coaches and fan opinion to determine what makes a great Wimbledon champion. Raw statistics might tell us who the most successful player is, but great means more than best. Statistics can't measure sportsmanship, relationship with the crowd, flair or passion.
         </p>
         <p>
-          The statistics team were able to produce a report, with start and end timestamps of the matches and the outcome, did they win or lose for all the top players. Using https://www.wunderground.com I pulled in temperature data for these matches and could see how many matches a player had played by temperature.
+          My assumption was that the statistics would tell us about match performance and the unstructured content would cover the fuzzier elements. That, to some degree was true, but the most revealing insights came when the unstructured analysis forced us to ask new questions of the statistics. Bias in machine learning is an active topic and we took efforts to avoid it. In the best moments of this project this bias was reversed, the machine learning analysis challenged our biases as developers, coaches, journalists and fans.
         </p>
-      </artilce>
+        <h2>Day Zero</h2>
+        <p>
+          Our first step was to get a rough sense of how each player was described in the archives. We selected and grouped content by player and a TF-IDF analysis found words closely associated with each player. Intriguingly, ‘sweat’ was showing a statically significant correlation to Roger Federer, but not to any other player. Does he work harder than the rest of the players? Does he have a problem with perspiration? Or is he sponsored by a deodorant company? A more detailed analysis of those documents showed the opposite, Roger Federer does not sweat. Many articles contained variations on the theme of him winning without perspiring. There are more references to Federer’s lack of sweat than to many other player’s serves.
+        </p>
+        <p>
+          That Roger Federer does not sweat had become ingrained thinking, the sort of idea we were looking to challenge. Was it real or just a lazy cliche? We had IBM’s Wimbledon match data for all the top players and using https://www.wunderground.com we pulled in temperature data for those matches. This let us see the number of matches played by player and temperature.
+        </p>
+      </article>
+
       <article class='temp-matches-played'>
         <h2>Games Played by Player</h2>
         <div class='visualisation'>
@@ -54,14 +64,13 @@
           </div>
         </div>
       </article>
+
       <article>
         <p>
-          We also knew the results of these matches, so we could produce a win:loss ratio by temperature for each player. This showed Nadal had a better ratio when it was cooler and Federer was consistent regardless of the temperature. Interesting, but not conclusive.  The top players lose so few matches and when they do they tend to be against other top players, so a win:loss ratio is not always a reliable statistic.
-        </p>
-        <p>
-          Going back to the stats team we came up with a better measure, percentage of points won and loss. Even a great player will loose lots of points in a game, ratio of points won to lost give a good indication of how dominant they are in the match.
+          We also knew the results of these matches, so we could calculate a win:loss ratio by temperature for each player. This showed Federer was consistent regardless of the temperature. Intriguingly, Nadal appeared to be more successsful when it was cooler. Interesting maybe, but not conclusive. The top players lose so few matches (and when they do they tend to be against other top players), that a win:loss ratio is not a reliable statistic. We came up with a better measure, looking at the ratio of points won and lost. Even a great player will lose many points across a game.
         </p>
       </article>
+
       <article class='temp-points-won'>
         <h2>Percentage of Points Won by Player</h2>
         <div class='visualisation'>
@@ -80,9 +89,16 @@
           </div>
         </div>
       </article>
+
       <article>
-        <p>The results again showed that Nadal is more successful in cooler temperatures.  Federer and the majority of the greats performed consistently regardless of the temperature.  Only Agassi, like Nadal, did better in cooler conditions.  This seemed to prove that the stereotype of Nadal playing best when it hot was wrong. It still left the question of why Federer doesn’t sweat.</p>
+        <p>
+          These results again showed that Federer (and the majority of the greats) performed consistently, regardless of the temperature. Perhaps there is more to this than a cliche, but Federer was not any better at dealing with warmer temperatures than any other great. So why might it be that Federer doesn’t appear to sweat? Our tennis experts knew Federer to be ruthless in finishing the games, he tends to dominate the play and not get involved in many long gruelling matches. Our coach described the way Federer will attack the net. If you come in close, the point is going to end quickly whether you win or lose. The statistics back this up, his matches tend to be shorter than average. So maybe we don’t see Federer sweat as he’s rarely on court long enough?
+        </p>
+        <p>
+          What took our attention in these results wasn’t Federer, but Nadal. Again they confirmed the previous results, that Nadal is more successful in cooler temperatures (Agassi was the only other great who shared this trend).
+        </p>
       </article>
+
       <article class='temp-player-points-won'>
         <h2>Percentage of Points Won by Player and Temperature</h2>
         <div class='visualisation'>
@@ -91,16 +107,78 @@
           </div>
         </div>
       </article>
+
       <article>
         <p>
-          We brought this up at our weekly editorial meeting with the Telegraph sports journalists, and our tennis experts (ex-pros and coaches).  They knew why Federer doesn’t sweat. He is more ruthless in finishing the games, he tends to dominate the play and doesn’t get involved in many long gruelling matches. Our coach described the way he will attack the net. If you come in close, the point is going to end quickly whether you win or lose.  The statistics back this up, his matches tend to be shorter than average.
+          As much as there's a cliche about Federer's lack of sweat, common thinking is that Nadal doesn't like to play in cooler weather.  He’s from Mallorca the stereotype goes, of course he’ll do better in Mediterranean weather.  Even Nadal thinks this is the case as confirmed in several interviews.
+        </p>
+        <blockquote>
+          <p class='quote'>
+            <span class='quote-mark'>&#8220;</span><span class='text'>I prefer the sun and the heat. But instead we have cold, wind and rain.</span><span class='quote-mark'>&#8221;</span>
+            - <span class='source'>Rafael Nadal, Daily Telegraph 3 July 2007</span>
+          </p>
+        </blockquote>
+        <p>
+          The data shows that is not the true. He’s certainly no worse when its colder and if anything he has a better record when the temperature is lower. This formed the basis of a Telegraph <a href='http://www.telegraph.co.uk/tennis/player-qualities/rafa-nadal-hope-no-wimbledon-heatwave/'>article</a> and fans used social media to debate the affect temperature would have on their favourite players.
         </p>
         <p>
-          It’s not that Federer doesn’t break sweat, it’s that when he’s on form he finishes the matches before he even needs to. The way to beat Federer might be to get in to a long, drawn out war of attrition.  But what about Nadal. It doesn’t explain why he performs better in cooler temperatures.
+          <a href='http://www.telegraph.co.uk/tennis/player-qualities/rafa-nadal-hope-no-wimbledon-heatwave/'><img src='images/telegraph-temperature.jpg'/></a>
+        </p>
+        <p>
+          Several fans highlighted the affect the temperature could be having on the ball and surface.
+        </p>
+        <blockquote>
+          <p class='quote'>
+            <span class='quote-mark'>&#8220;</span><span class='text'>I wonder too if part of it at Wimbledon is with the change in the temperature, the surface changes quickly - obviously these are the top players who can adapt quickly to it but perhaps the differences just suit Federer and Nadal differently.</span><span class='quote-mark'>&#8221;</span>
+            - <span class='source'>Nickie Chapman, 29 Jun 2017</span>
+          </p>
+        </blockquote>
+        <blockquote>
+          <p class='quote'>
+            <span class='quote-mark'>&#8220;</span><span class='text'>I change my racket with the the season since the warmer it is the more speed and bounce to the balll.  What this tells us is that Nadal thrives on a slower less bouncy ball which when you look at his style of play is unsurprising.  Nadal's racket suits my winter game and Djokovic's (which has more strings) my summer game.</span><span class='quote-mark'>&#8221;</span>
+            - <span class='source'>Arnie Ward, 29 Jun 2017 </span>
+          </p>
+        </blockquote>
+        <p>
+          We had been thinking in terms of temperature impacting player's endurance.  What we hadn’t been looking at was the temperature's affect on the balls and the surface, something Anne Keothavong agreed with the fans on.  Anne was not surprised that Nadal performed better in cooler conditions. She said that it slows the ball down, making it more like playing on Nadal’s  favourite surface, clay.
         </p>
       </article>
+
       <article class='embed'>
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/5AtTvCUO7k8?rel=0&amp;showinfo=0&start=741" frameborder="0" allowfullscreen></iframe>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/5AtTvCUO7k8?rel=0&amp;showinfo=0&start=742" frameborder="0" allowfullscreen></iframe>
+      </article>
+
+      <article>
+        <p>
+          So Federer is good in any temperature. He does sweat, it’s just that he’s rarely on court long enough to get hot. Nadal might like the sunshine and warmth, but he performs better in slightly cooler conditions, where the slower speeds suit his strong baseline game. A tiny bit of analysis in a bigger project, but one that engaged fans and made us all think about things differently.
+        </p>
+        <h2>The Things We Didn’t Know We Knew</h2>
+        <p>
+          What I think was interesting in this piece of analysis was that everything was known, but just not quite connected together.
+        </p>
+        <p>
+          That there is a cliche of Federer not sweating was hidden inside lots of media reports spread over many years. It's only when we saw all the references together that it was clear how ingrained the thinking is.
+        </p>
+        <p>
+          Historic temperature data and Wimbledon match results both existed, but it's only in combining the two sources that you see that Nadal has a better record when it’s cooler. That Nadal himself has been influenced by the stereotype against him is only visible when you add in his interview comments.
+        </p>
+        <p>
+          That Federer plays shorter games is known by tennis statisticians, but not connected to his consistency across temperatures.
+        </p>
+        <p>
+          That tennis fans and players know that the ball slows when it’s cooler. That they know a slower ball suits Nadal and yet that is not used to question the idea of Nadal being better in the heat.
+        </p>
+        <p>
+          The analysis to was mainly statistical, what the unstructured analysis did was force us to ask the right questions, to challenge the assumptions and bypass some of our biases.
+        </p>
+        <p>-<a href='https://twitter.com/shawdm'>Darren Shaw</a>, 14 July 2017</p>
+      </article>
+
+      <article>
+        <h3>Notes</h3>
+        <p class='notes'>
+          We based the project around Watson Discovery Service. Temperature data was from https://www.wunderground.com. Source data came from Wimbledon and The Telegraph.
+        </p>
       </article>
     </section>
   </body>

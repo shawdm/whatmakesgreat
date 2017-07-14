@@ -111,6 +111,12 @@ p {
   margin-right: auto;
 }
 
+p.notes{
+  font-size: 0.625rem;
+  line-height: 1rem;
+
+}
+
 img {
   max-width: 100%;
 }
@@ -239,7 +245,7 @@ article {
   position: relative;
 }
 
-article.federer-perspired p{
+article blockquote p{
   font-style: italic;
   font-size: 1.25rem;
   line-height: 1.6rem;
@@ -254,14 +260,14 @@ article.federer-perspired blockquote{
 
 
 
-article.federer-perspired p.quote span.text{
+article blockquote p.quote span.text{
 }
 
-article.federer-perspired p.quote span.quote-mark{
+article blockquote p.quote span.quote-mark{
   font-size: 1.4rem;
 }
 
-article.federer-perspired p.quote span.source{
+article blockquote p.quote span.source{
   font-size: 1rem;
   font-style: normal;
 }
