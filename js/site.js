@@ -265,7 +265,8 @@ function getFilteredTemperatureData(data, minTemp, maxTemp, player){
           var temp = parseFloat(field);
           if(temp && data[i][field] && data[i][field].length > 0){
             var value = parseFloat(data[i][field]);
-            if(!minTemp || !maxTemp || (temp >= minTemp && temp < maxTemp)){
+
+            if(!minTemp || !maxTemp || (temp >= minTemp && temp <= maxTemp)){
               playerData.sum = playerData.sum + value;
               playerData.itemCount++;
               playerData.fields.push(field);
@@ -369,22 +370,21 @@ function initTemperatureMatchPlayedGraph(data){
 
 }
 
-
+/*
 function updateTemperatureMatchPlayedTitle(player, minTemp, maxTemp){
-  var text = text = 'Games Played by Player Between '+minTemp + String.fromCharCode(176) + 'C and ' + maxTemp +String.fromCharCode(176)+'C';
+  console.log('yo!');
+  var text = 'Games Played by Player Between '+minTemp + String.fromCharCode(176) + 'C and ' + maxTemp +String.fromCharCode(176)+'C';
 
-  if(minTemp && (!maxTemp ||maxTemp>=DATA_STORE.absolute_max_temp)){
-    text += ' Above ' + minTemp + String.fromCharCode(176) + 'C';
+  if(minTemp && maxTemp && minTemp == maxTemp){
+    text = 'Games Played by Player At '+minTemp + String.fromCharCode(176) + 'C';
   }
-  else if(maxTemp && (!minTemp || minTemp <= DATA_STORE.absolute_min_temp)){
-    text += ' Below ' + maxTemp + String.fromCharCode(176) + 'C';
-  }
-  else if(maxTemp && minTemp){
-    text += ' Between ' + minTemp + String.fromCharCode(176) + 'C and ' + maxTemp + String.fromCharCode(176)+'C';
+  else{
+    console.log(minTemp + ' ' + maxTemp);
   }
 
   d3.select('article.temp-matches-played h2').text(text);
 }
+*/
 
 
 function updateTemperatureMatchPlayedGraph(filteredData){
@@ -562,7 +562,10 @@ function updateTemperaturePointsWonGraph(data){
 function updateTemperaturePointsWonTitle(player, minTemp, maxTemp){
   var text = 'Percentage of Points Won by Player';
 
-  if(maxTemp && minTemp){
+  if(maxTemp && minTemp && minTemp == maxTemp){
+    text += ' At ' + minTemp + String.fromCharCode(176) + 'C';
+  }
+  else if(maxTemp && minTemp){
     text += ' Between ' + minTemp + String.fromCharCode(176) + 'C and ' + maxTemp + String.fromCharCode(176)+'C';
   }
 
@@ -572,7 +575,10 @@ function updateTemperaturePointsWonTitle(player, minTemp, maxTemp){
 
 function updateTemperatureMatchPlayedTitle(player, minTemp, maxTemp){
   var text = 'Games Played by Player';
-  if(maxTemp && minTemp){
+  if(maxTemp && minTemp && minTemp == maxTemp){
+    text += ' At ' + minTemp + String.fromCharCode(176) + 'C';
+  }
+  else if(maxTemp && minTemp){
     text += ' Between ' + minTemp + String.fromCharCode(176) + 'C and ' + maxTemp + String.fromCharCode(176)+'C';
   }
 
