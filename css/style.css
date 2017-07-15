@@ -292,6 +292,9 @@ article.embed{
   text-align: center;
 }
 
+article.embed iframe{
+  max-width: 100%;
+}
 
 
 a.action{
@@ -594,6 +597,11 @@ div.end_of_stream{
 
 
 @media (max-width: 600px) {
+  article blockquote p{
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+
   .barchart div span{
     padding-bottom: 1px;
   }
