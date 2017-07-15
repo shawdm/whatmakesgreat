@@ -597,6 +597,17 @@ div.end_of_stream{
 
 
 @media (max-width: 600px) {
+
+  a.action:HOVER{
+    color: #fff;
+    background-color: #F3B562;
+  }
+
+  a.player-action:HOVER{
+    background-color: #8CBEB2;
+    color: #ffffff;
+  }
+
   article blockquote p{
     margin-left: 20px;
     margin-right: 20px;
