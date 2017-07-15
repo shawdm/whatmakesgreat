@@ -52,6 +52,7 @@ function initDispatches(){
     updateTemperaturePlayerPointsWonGraphSelected(this.name);
     updateTemperatureMatchPlayedGraphSelected(DATA_STORE.temperatureMatchesPlayed.data, this.name);
     updateTemperaturePointsWonGraphSelected(DATA_STORE.temperatureMatchesPlayed.data, this.name);
+    updateTemperaturePointsWonGraphTitle(this.name);
   });
 
   DISPATCH.on('quoterefresh', refreshPerspireQuote);
@@ -455,6 +456,8 @@ function updateTemperaturePointsWonGraphSelected(filteredData, selectedPlayer){
       return false;
     }
   });
+
+
 }
 
 
@@ -574,6 +577,15 @@ function updateTemperatureMatchPlayedTitle(player, minTemp, maxTemp){
   }
 
   d3.select('article.temp-matches-played h2').text(text);
+}
+
+
+function updateTemperaturePointsWonGraphTitle(player){
+  var text = 'Percentage of Points Won by Player and Temperature';
+  if(player && player.length > 0){
+    text = 'Percentage of Points Won by '+player.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();})+' and Temperature';
+  }
+  d3.select('article.temp-player-points-won h2').text(text);
 }
 
 function initTemperaturePlayerPointsWonGraph(filteredData, minTemp, maxTemp){
